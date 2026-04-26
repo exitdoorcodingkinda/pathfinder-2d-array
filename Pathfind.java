@@ -37,8 +37,9 @@ public class Pathfind {
         start.h = Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
         map[0][0] = start;
         printScreen(visibleMap);
-        ArrayList<Node> path = findPath(start,goal,map);
-        for(int i = path.size() - 1; i >= 0; i--){
+        //ArrayList<Node> path = findPathAStar(start,goal,map);
+        ArrayList<Node> path = findPathFloodFill(start,goal,map);
+        for(int i = 0; i < path.size(); i++){
             System.out.println(path.get(i).x + ", " + path.get(i).y);
             visibleMap[path.get(i).y][path.get(i).x] = 2;
             printScreen(visibleMap);
@@ -47,7 +48,12 @@ public class Pathfind {
         }
     }
 
-    public ArrayList<Node> findPath(Node start, Node goal, Node[][] map){
+    public ArrayList<Node> findPathFloodFill(Node start, Node goal, Node[][] map){
+
+        return new ArrayList<>();
+    }
+
+    public ArrayList<Node> findPathAStar(Node start, Node goal, Node[][] map){
         PriorityQueue<Node> openList = new PriorityQueue<Node>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
