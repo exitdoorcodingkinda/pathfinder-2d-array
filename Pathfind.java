@@ -18,12 +18,12 @@ public class Pathfind {
                 {0,0,0,0,1,0,1,0,1,0}
         };
 
-
+            // initialize a new 2d array of nodes to have alongside our visible map, which is what displays the walls and pathing.
         Node[][] map = new Node[HEIGHT][WIDTH];
         for(int r = 0; r < HEIGHT; r++){
             for(int c = 0; c < WIDTH; c++){
                 if(visibleMap[r][c] == 1){
-                    map[r][c] = new Node(null, false, r, c);
+                    map[r][c] = new Node(null, false, r, c); // set a node to be walkable or whatever, can maybe be used for weighting in the future
                 }
             }
         }
@@ -54,13 +54,14 @@ public class Pathfind {
                 return o1.f - o2.f; // negative means 01 is better f value than o2
             }
         });
+        // * Priority queue will sort stuff to the front depending on whatever, i use a comparator to put the Node with the smallest F at the front, the most likely to lead to the goal
 
-        HashSet<Node> closedList = new HashSet<Node>();
-        openList.add(start);
+        HashSet<Node> closedList = new HashSet<Node>(); // will store nodes that have already been analyzed
+        openList.add(start); // adds the start to the openlist to being analyzing neighbors
 
-        while(!openList.isEmpty()){
-            Node current = openList.poll();
-            if(current == goal){
+        while(!openList.isEmpty()){ // while there are nodes to analyze for possible pathing
+            Node current = openList.poll(); // take the node with the lowest F from openlist
+            if(current == goal){ // if its equal to the goal node, which is already instantiated on the map, then make an arraylist of the nodes parents that connect to it
                 ArrayList<Node> path = new ArrayList<>();
                 path.add(current);
                 Node c = current.parent;
@@ -72,40 +73,40 @@ public class Pathfind {
                 return path;
             }
             closedList.add(current);
-            int[][] neighbors = new int[][] {{0,1},{0,-1},{1,0},{-1,0}};
+            int[][] neighbors = new int[][] {{0,1},{0,-1},{1,0},{-1,0}}; // up, left, right, down
 
-            for(int[] list : neighbors){
+            for(int[] list : neighbors){ // for each direction possible
                 int currenty = current.y + list[1];
-                int currentx = current.x + list[0];
-                if(inBounds(currenty, currentx)){
-                    Node neighbor = map[currenty][currentx];
-                    if(neighbor == null){
+                int currentx = current.x + list[0]; // set the x and y to the currents x and y + the direction
+                if(inBounds(currenty, currentx)){ // if the new coordinates are in the bounds of the visible/node map
+                    Node neighbor = map[currenty][currentx]; // get the node at neighbor in the nodemap
+                    if(neighbor == null){ // if the node is not instantiated yet then instantiate
                         neighbor = new Node(null, true, currentx, currenty);
-                        neighbor.g = Integer.MAX_VALUE;
-                        map[currenty][currentx] = neighbor;
+                        neighbor.g = Integer.MAX_VALUE; // so that it is default unvisited, because it hasnt been visited yet
+                        map[currenty][currentx] = neighbor; // set the location on the nodemap to the neighbors new node
                     }
-                    if(neighbor.walkable == false){
-                        continue;
+                    if(!neighbor.walkable){
+                        continue; // if the node is not walkable then skip this direction
                     }
                     if(closedList.contains(neighbor)){
-                        continue;
+                        continue; // if this node has already been evaluated as inefficient, skip it
                     }
 
-                    int nextG = current.g+1;
-                    if(!openList.contains(neighbor)){
-                        neighbor.g = nextG;
-                        neighbor.h = Math.abs(neighbor.x - goal.x) + Math.abs(neighbor.y - goal.y);
-                        neighbor.f = neighbor.g + neighbor.h;
-                        neighbor.parent = current;
+                    int nextG = current.g+1; // the next G aka distance from the start which is just a counter
+                    if(!openList.contains(neighbor)){ // if neighbor is not in the open list, that means we have not evaluated it yet
+                        neighbor.g = nextG; // we set it to the nextg, cause it would come next and be 1 further from the start
+                        neighbor.h = Math.abs(neighbor.x - goal.x) + Math.abs(neighbor.y - goal.y); // simple distance calculation to the end goal
+                        neighbor.f = neighbor.g + neighbor.h; // f is the score of the distance from the start, and distance from the goal, lower is better
+                        neighbor.parent = current; // set the neighbors parent to the current and add it to openlist, cus it could be the goal
                         openList.add(neighbor);
                     }
-                    else if(nextG < neighbor.g){
-                        neighbor.g = nextG;
+                    else if(nextG < neighbor.g){ // nextg is the cost to reach the neighbor from current node, if the new g for it is better (better path) then update it, else skip
+                        neighbor.g =
                         neighbor.h = Math.abs(neighbor.x - goal.x) + Math.abs(neighbor.y - goal.y);
                         neighbor.f = neighbor.g + neighbor.h;
                         neighbor.parent = current;
                         openList.remove(neighbor);
-                        openList.add(neighbor);
+                        openList.add(neighbor); // cus priority queue crap
                     }
                 }
             }
