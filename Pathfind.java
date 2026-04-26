@@ -1,34 +1,37 @@
 import java.util.*;
 
 public class Pathfind {
+    private final int WIDTH = 10;
+    private final int HEIGHT = 10;
     public Pathfind(){
         Scanner sc = new Scanner(System.in);
-        int[][] visibleMap = new int[15][15];
-        for(int r = 0; r < 15; r++){
-            for(int c = 0; c < 15; c++){
-                if(r == 7){
-                    visibleMap[r][c] = 1;
-                }else{
-                    visibleMap[r][c] = 0;
-                }
-            }
-        }
-        visibleMap[7][14] = 0;
+        int[][] visibleMap = new int[][]{
+                {0,1,0,0,0,1,0,0,0,0},
+                {0,1,0,1,0,1,0,0,0,0},
+                {0,0,0,1,0,1,0,0,0,0},
+                {0,0,0,0,0,1,0,0,0,0},
+                {1,1,0,1,0,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,1,1,1,0,1,0},
+                {0,0,0,0,1,0,1,0,1,0},
+                {0,0,0,0,1,0,1,0,1,0},
+                {0,0,0,0,1,0,1,0,1,0}
+        };
 
 
-        Node[][] map = new Node[15][15];
-        for(int r = 0; r < 15; r++){
-            for(int c = 0; c < 15; c++){
+        Node[][] map = new Node[HEIGHT][WIDTH];
+        for(int r = 0; r < HEIGHT; r++){
+            for(int c = 0; c < WIDTH; c++){
                 if(visibleMap[r][c] == 1){
                     map[r][c] = new Node(null, false, r, c);
                 }
             }
         }
-        Node goal = new Node(null, true, 14, 14);
+        Node goal = new Node(null, true, 9, 9);
         goal.g = 0;
         goal.h = 0;
         goal.f = 0;
-        map[14][14] = goal;
+        map[9][9] = goal;
         Node start = new Node(null, true, 0, 0);
         start.g = 0;
         start.h = Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
@@ -111,12 +114,12 @@ public class Pathfind {
         return new ArrayList<>();
     }
     public boolean inBounds(int y, int x){
-        return (y >= 0 && y < 15 && x >= 0 && x < 15 );
+        return (y >= 0 && y < HEIGHT && x >= 0 && x < WIDTH );
     }
 
     public void printScreen(int[][] map){
-        for(int r = 0; r < 15; r++){
-            for(int c = 0; c < 15; c++){
+        for(int r = 0; r < HEIGHT; r++){
+            for(int c = 0; c < WIDTH; c++){
                 System.out.print(map[r][c] + " ");
             }
             System.out.println();
