@@ -3,9 +3,9 @@ public class Node {
     public boolean walkable;
     public int x;
     public int y;
-    public int f;
-    public int g;
-    public int h;
+    public double f;
+    public double g;
+    public double h;
     public boolean checked;
 
     public Node(Node parent, boolean walkable, int x, int y){

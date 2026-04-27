@@ -143,7 +143,7 @@ public class Pathfind {
         PriorityQueue<Node> openList = new PriorityQueue<Node>(new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                return o1.f - o2.f; // negative means 01 is better f value than o2
+                return (int)o1.f - (int)o2.f; // negative means 01 is better f value than o2
             }
         });
         // * Priority queue will sort stuff to the front depending on whatever, i use a comparator to put the Node with the smallest F at the front, the most likely to lead to the goal
@@ -165,7 +165,7 @@ public class Pathfind {
                 return path;
             }
             closedList.add(current);
-            int[][] neighbors = new int[][] {{0,1},{0,-1},{1,0},{-1,0}}; // up, left, right, down
+            int[][] neighbors = new int[][] {{0,1},{0,-1},{1,0},{-1,0},{-1,-1},{-1,1},{1,-1},{1,1}}; // up, left, right, down, and diagonals
 
             for(int[] list : neighbors){ // for each direction possible
                 int currenty = current.y + list[1];
@@ -183,8 +183,15 @@ public class Pathfind {
                     if(closedList.contains(neighbor)){
                         continue; // if this node has already been evaluated as inefficient, skip it
                     }
+                    double nextG;
+                    if(list[1] != 0 && list[0] != 0){
+                        nextG = current.g + 1.414;
+                    }else{
+                        nextG = current.g + 1;
+                    }
 
-                    int nextG = current.g+1; // the next G aka distance from the start which is just a counter
+
+                    // the next G aka distance from the start which is just a counter
                     if(!openList.contains(neighbor)){ // if neighbor is not in the open list, that means we have not evaluated it yet
                         neighbor.g = nextG; // we set it to the nextg, cause it would come next and be 1 further from the start
                         neighbor.h = Math.abs(neighbor.x - goal.x) + Math.abs(neighbor.y - goal.y); // simple distance calculation to the end goal
