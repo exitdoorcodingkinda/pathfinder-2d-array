@@ -6,6 +6,8 @@ public class Node {
     public int f;
     public int g;
     public int h;
+    public boolean checked;
+
     public Node(Node parent, boolean walkable, int x, int y){
         this.parent = parent;
         this.walkable = walkable;

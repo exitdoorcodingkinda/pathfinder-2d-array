@@ -37,20 +37,101 @@ public class Pathfind {
         start.h = Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
         map[0][0] = start;
         printScreen(visibleMap);
-        //ArrayList<Node> path = findPathAStar(start,goal,map);
-        ArrayList<Node> path = findPathFloodFill(start,goal,map);
-        for(int i = 0; i < path.size(); i++){
-            System.out.println(path.get(i).x + ", " + path.get(i).y);
-            visibleMap[path.get(i).y][path.get(i).x] = 2;
+
+
+        ArrayList<Node> astarpath = findPathAStar(start,goal,map);
+        ArrayList<Node> floodpath = findPathFloodFill(new int[] {0,0} ,new int[] {9,9},visibleMap);
+
+        for(int i = 0; i < floodpath.size(); i++){
+            System.out.println(floodpath.get(i).x + ", " + floodpath.get(i).y);
+            visibleMap[floodpath.get(i).y][floodpath.get(i).x] = 2;
+            printScreen(visibleMap);
+            System.out.println("go to next iteration?");
+            String x = sc.nextLine();
+        }
+        for(int i = astarpath.size()-1; i >= 0; i--){
+            System.out.println(astarpath.get(i).x + ", " + astarpath.get(i).y);
+            visibleMap[astarpath.get(i).y][astarpath.get(i).x] = 2;
             printScreen(visibleMap);
             System.out.println("go to next iteration?");
             String x = sc.nextLine();
         }
     }
 
-    public ArrayList<Node> findPathFloodFill(Node start, Node goal, Node[][] map){
+    public ArrayList<Node> findPathFloodFill(int[] startcoords, int[] goalcoords, int[][] map){
+        Node[][] nodemap = new Node[map.length][map[0].length];
 
-        return new ArrayList<>();
+        for(int r = 0; r < HEIGHT; r++){
+            for(int c = 0; c < WIDTH; c++){
+                if(map[r][c] == 1){
+                    Node wall = new Node(null, false, r, c);
+                    wall.checked = true;
+                    wall.g = -1;
+                    nodemap[r][c] = wall; // set a node to be walkable or whatever, can maybe be used for weighting in the future
+                }else{
+                    Node nnode = new Node(null, true, r, c);
+                    nnode.checked = false;
+                    nnode.g = Integer.MAX_VALUE;
+                    nodemap[r][c] = nnode;
+                }
+            } // fills the nodemap with already initialized, unwalkable ones, based on a int map passed through
+        }
+
+        Queue<Node> openlist = new LinkedList<>(); // linked list is amazing fast for insertions/deletions near the beginning (we'll be getting the item at index 0)
+
+        nodemap[goalcoords[1]][goalcoords[0]] = new Node(null, true, goalcoords[0], goalcoords[1]); // creates the end goal node
+        Node goal = nodemap[goalcoords[1]][goalcoords[0]] ;
+        goal.g = 1;
+        goal.checked = true;
+
+        int[][] neighbors = new int[][] {{0,1},{0,-1},{1,0},{-1,0}};
+
+        openlist.add(nodemap[goalcoords[1]][goalcoords[0]]);
+
+        while (!openlist.isEmpty()){
+            Node current = openlist.poll();
+            for(int[] neighbor : neighbors){
+                int neighbory = current.y + neighbor[1];
+                int neighborx = current.x + neighbor[0];
+
+                if(inBounds(neighbory, neighborx)){
+                    if(nodemap[neighbory][neighborx] != null && (!nodemap[neighbory][neighborx].walkable || nodemap[neighbory][neighborx].checked)){
+                        continue;
+                    }
+                    else{
+                        Node newnode = new Node(null, true, neighborx, neighbory); // new node with no parent, it is walkable
+                        newnode.g = current.g + 1; // set the g
+                        newnode.checked = true; // it has been checked
+                        nodemap[neighbory][neighborx] = newnode;
+                        openlist.add(nodemap[neighbory][neighborx]);
+                    }
+                }
+
+            }
+
+
+
+        }
+
+        ArrayList<Node> path = new ArrayList<>();
+        Node start = nodemap[startcoords[1]][startcoords[0]]; // this will follow the path
+        path.add(start);
+        while(start.g != 1){
+            for(int[] nbs : neighbors){
+                int nbx = start.x + nbs[0];
+                int nby = start.y + nbs[1];
+                if(inBounds(nby,nbx)){
+                    if(nodemap[nby][nbx] != null && nodemap[nby][nbx].walkable && nodemap[nby][nbx].g < start.g){
+                        start = nodemap[nby][nbx];
+                        path.add(nodemap[nby][nbx]);
+                    }
+                }
+
+            }
+        }
+
+        return path;
+
     }
 
     public ArrayList<Node> findPathAStar(Node start, Node goal, Node[][] map){
