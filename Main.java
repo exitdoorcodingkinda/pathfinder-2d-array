@@ -1,6 +1,3 @@
-import java.util.Scanner;
-
-
 public class Main {
     public static void main(String[] args){
         int[][] map = new int[][]{
@@ -18,8 +15,6 @@ public class Main {
         Pathfind p = new Pathfind(map);
         System.out.println(p.printPathAStar(0,0,9,9,map));
         System.out.println(p.printPathFloodFill(0,0,9,9,map));
-
-
 
     }
 }
