@@ -1,46 +1,34 @@
 import java.util.*;
 
 public class Pathfind {
-    private final int WIDTH = 10;
-    private final int HEIGHT = 10;
-    private String method;
+    private int WIDTH;
+    private int HEIGHT;
 
 
-    public Pathfind(int[][] visibleMap, String method, int startx, int starty, int goalx, int goaly){
-        Scanner sc = new Scanner(System.in);
-
-        switch(method){
-            case "astar":
-                ArrayList<Node> astarpath = findPathAStar(new int[] {startx,starty}, new int[] {goalx,goaly}, visibleMap);
-
-                for(int i = astarpath.size()-1; i >= 0; i--){
-                    System.out.println(astarpath.get(i).x + ", " + astarpath.get(i).y);
-                    visibleMap[astarpath.get(i).y][astarpath.get(i).x] = 2;
-                    printScreen(visibleMap);
-                    System.out.println("go to next iteration?");
-                    String x = sc.nextLine();
-                }
-                break;
-            case "floodfill":
-                ArrayList<Node> floodpath = findPathFloodFill(new int[] {startx,starty} ,new int[] {goalx,goaly},visibleMap);
-
-                for(int i = 0; i < floodpath.size(); i++){
-                    System.out.println(floodpath.get(i).x + ", " + floodpath.get(i).y);
-                    visibleMap[floodpath.get(i).y][floodpath.get(i).x] = 2;
-                    printScreen(visibleMap);
-                    System.out.println("go to next iteration?");
-                    String x = sc.nextLine();
-                }
-                break;
-        }
-
-
-
-
-
+    public Pathfind(int[][] visibleMap, int startx, int starty, int goalx, int goaly){
+        HEIGHT = visibleMap.length;
+        WIDTH = visibleMap[0].length;
     }
-    public void printPathFloodFill(){
+    public Pathfind(int[][] visibleMap){
+        HEIGHT = visibleMap.length;
+        WIDTH = visibleMap[0].length;
+    }
 
+    public void printPathAStar(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
+        ArrayList<Node> astarpath = findPathAStar(new int[] {startx,starty}, new int[] {goalx,goaly}, visibleMap);
+
+        for(int i = astarpath.size()-1; i >= 0; i--){ // the iterator through the path
+            visibleMap[astarpath.get(i).y][astarpath.get(i).x] = 2;
+        }
+        printScreen(visibleMap);
+    }
+    public void printPathFloodFill(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
+        ArrayList<Node> floodpath = findPathFloodFill(new int[] {startx,starty} ,new int[] {goalx,goaly},visibleMap);
+
+        for(int i = 0; i < floodpath.size(); i++){
+            visibleMap[floodpath.get(i).y][floodpath.get(i).x] = 2;
+        }
+        printScreen(visibleMap);
     }
 
 
@@ -95,27 +83,28 @@ public class Pathfind {
                         openlist.add(nodemap[neighbory][neighborx]);
                     }
                 }
-
             }
-
-
-
         }
 
         ArrayList<Node> path = new ArrayList<>();
         Node start = nodemap[startcoords[1]][startcoords[0]]; // this will follow the path
         path.add(start);
-        while(start.g != 1){
+        while((int)start.g != 1){
+            int lastG = (int)start.g;
             for(int[] nbs : neighbors){
                 int nbx = start.x + nbs[0];
                 int nby = start.y + nbs[1];
                 if(inBounds(nby,nbx)){
-                    if(nodemap[nby][nbx] != null && nodemap[nby][nbx].walkable && nodemap[nby][nbx].g < start.g){
+                    if(nodemap[nby][nbx] != null && nodemap[nby][nbx].walkable && (int) nodemap[nby][nbx].g < (int)start.g){
                         start = nodemap[nby][nbx];
                         path.add(nodemap[nby][nbx]);
                     }
                 }
 
+            }
+            if ((int)start.g == lastG){
+                System.out.println("No path found");
+                return path;
             }
         }
 
@@ -200,7 +189,7 @@ public class Pathfind {
                         openList.add(neighbor);
                     }
                     else if(nextG < neighbor.g){ // nextg is the cost to reach the neighbor from current node, if the new g for it is better (better path) then update it, else skip
-                        neighbor.g =
+                        neighbor.g = nextG;
                         neighbor.h = Math.abs(neighbor.x - goal.x) + Math.abs(neighbor.y - goal.y);
                         neighbor.f = neighbor.g + neighbor.h;
                         neighbor.parent = current;
@@ -224,10 +213,6 @@ public class Pathfind {
             }
             System.out.println();
         }
-    }
-
-    public void setMethod(String method){
-        this.method = method;
     }
 
 }
