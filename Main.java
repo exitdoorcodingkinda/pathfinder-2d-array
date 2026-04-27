@@ -16,8 +16,9 @@ public class Main {
                 {0,0,0,0,1,0,1,0,1,0}
         };
         Pathfind p = new Pathfind(map);
-        p.printPathAStar(0,0,9,9,map);
-        p.printPathFloodFill(0,0,9,9,map);
+        System.out.println(p.printPathAStar(0,0,9,9,map));
+        System.out.println(p.printPathFloodFill(0,0,9,9,map));
+
 
 
     }

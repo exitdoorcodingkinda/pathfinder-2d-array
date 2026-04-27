@@ -14,22 +14,29 @@ public class Pathfind {
         WIDTH = visibleMap[0].length;
     }
 
-    public void printPathAStar(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
+    public int printPathAStar(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
         ArrayList<Node> astarpath = findPathAStar(new int[] {startx,starty}, new int[] {goalx,goaly}, visibleMap);
+        int n = 0;
 
         for(int i = astarpath.size()-1; i >= 0; i--){ // the iterator through the path
             visibleMap[astarpath.get(i).y][astarpath.get(i).x] = 2;
+            n++;
         }
         printScreen(visibleMap);
+        return n;
     }
-    public void printPathFloodFill(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
+    public int printPathFloodFill(int startx, int starty, int goalx, int goaly, int[][] visibleMap){
         ArrayList<Node> floodpath = findPathFloodFill(new int[] {startx,starty} ,new int[] {goalx,goaly},visibleMap);
+        int n = 0;
 
         for(int i = 0; i < floodpath.size(); i++){
             visibleMap[floodpath.get(i).y][floodpath.get(i).x] = 2;
+            n++;
         }
         printScreen(visibleMap);
+        return n;
     }
+
 
 
 
